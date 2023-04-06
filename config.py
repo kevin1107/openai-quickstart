@@ -1,4 +1,5 @@
 import os
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -8,6 +9,15 @@ class Config:
     OPENAI_URL = os.getenv('OPENAI_URL', 'https://api.openai.com/v1/chat/completions')
     OPENAI_MAX_RETRY = os.getenv('OPENAI_MAX_RETRY', '3')
     OPENAI_TIMEOUT = os.getenv('OPENAI_TIMEOUT', '30')
+    MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.googlemail.com')
+    MAIL_PORT = int(os.environ.get('MAIL_PORT', '587'))
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() in \
+                   ['true', 'on', '1']
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    OPENAI_MAIL_SUBJECT_PREFIX = '[OpenAI]'
+    OPENAI_MAIL_SENDER = 'OpenAI Admin <openai@example.com>'
+    OPENAI_ADMIN = os.environ.get('OPENAI_ADMIN')
 
     @staticmethod
     def init_app(app):
@@ -28,6 +38,24 @@ class ProductionConfig(Config):
     @classmethod
     def init_app(cls, app):
         Config.init_app(app)
+        # email errors to the administrators
+        import logging
+        from logging.handlers import SMTPHandler
+        credentials = None
+        secure = None
+        if getattr(cls, 'MAIL_USERNAME', None) is not None:
+            credentials = (cls.MAIL_USERNAME, cls.MAIL_PASSWORD)
+            if getattr(cls, 'MAIL_USE_TLS', None):
+                secure = ()
+        mail_handler = SMTPHandler(
+            mailhost=(cls.MAIL_SERVER, cls.MAIL_PORT),
+            fromaddr=cls.OPENAI_MAIL_SENDER,
+            toaddrs=[cls.OPENAI_ADMIN],
+            subject=cls.OPENAI_MAIL_SUBJECT_PREFIX + ' Application Error',
+            credentials=credentials,
+            secure=secure)
+        mail_handler.setLevel(logging.ERROR)
+        app.logger.addHandler(mail_handler)
 
 
 class DockerConfig(ProductionConfig):
