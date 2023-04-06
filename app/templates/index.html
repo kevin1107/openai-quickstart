@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="description" content="Demonstration of ChatGPT API in a Python Flask Application">
+    <title>AI Chatbot</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">AI CHAT</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                    aria-controls="">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0"></ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="flex-shrink-0">
+    <div class="container">
+        <br>
+        <br>
+        <h1 class="mt-5">Get Started with ChatGPT API from OpenAI</h1>
+        <p class="lead">
+            This project is created for demonstrates the use of ChatGPT API from OpenAI.To get started you will need the following:
+        </p>
+        <ul>
+            <li>
+                OpenAI API Key,which you can get here: <a href="https://platform.openai.com/account/api-keys">OpenAI
+                Website</a>
+            </li>
+        </ul>
+
+
+        <div id="list-group" class="list-group w-auto">
+            <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3">
+                <img src="https://digital-practice.ams3.cdn.digitaloceanspaces.com/static%2Fapp%2Fimg%2Fopenai-logo.png"
+                     alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+                <div class="d-flex gap-2 w-100 justify-content-between">
+                    <div>
+                        <p class="mb-0 opacity-75">Hi, my name is AI_Rebot - the helpful assistant,how can i help you
+                            today?</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" id="chat-input">
+            <div class="input-group-append">
+                <button id="gpt-button" class="btn btn-primary">Ask ChatGPT</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.2/css/bootstrap.min.css"
+      integrity="sha512-H9gUZS59UVe/5QjY6Ujl8l4J4xHpl4Llr5V7fW8XZmVnBfpepIw/cG/Dn8RQnFWbGl1okKMq3mlljChtXfegiA=="
+      crossorigin="anonymous" referrerpolicy="no-referrer"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.2/js/bootstrap.min.js"
+        integrity="sha512-F4yV/P91yG5v7VWbgO8A1HrN+Lr20ufYf96NzB/Toaf49Dy+COPIQJgW9id9M2m+DmMB/h3hPsYm/AkA+UEfGA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    $("#gpt-button").click(function () {
+        var question = $("#chat-input").val();
+        let html_data = '';
+        html_data += `
+      <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3">
+        <img src="{{ url_for('static', filename='images/favicon.png') }}" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+        <div class="d-flex gap-2 w-100 justify-content-between">
+          <div>
+            <p class="mb-0 opacity-75">${question}</p>
+          </div>
+        </div>
+      </a>
+      `;
+        $("#chat-input").val('');
+        $("#list-group").append(html_data);
+
+        $.ajax({
+            type: "POST",
+            url: "/",
+            data: {'prompt': question},
+            success: function (data) {
+                let gpt_data = '';
+                gpt_data += `
+                              <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3">
+                                <img src="https://digital-practice.ams3.cdn.digitaloceanspaces.com/static%2Fapp%2Fimg%2Fopenai-logo.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+                                 <div class="d-flex gap-2 w-100 justify-content-between">
+                                 <div>
+                                <p class="mb-0 opacity-75">${data.answer}</p>
+                                </div>
+                              </div>
+                              </a>
+                          `;
+                $("#list-group").append(gpt_data);
+            }
+        });
+    });
+</script>
+</body>
+</html>
