@@ -10,6 +10,7 @@ if os.path.exists(dotenv_path):
 COV = None
 if os.environ.get('FLASK_COVERAGE'):
     import coverage
+
     COV = coverage.coverage(branch=True, include='app/*')
     COV.start()
 
@@ -17,7 +18,7 @@ import sys
 import click
 from app import create_app
 
-app = create_app(os.getenv('FLASK_CONFIG') or 'default')
+app = create_app(os.environ.get('FLASK_CONFIG', 'default'))
 
 
 @app.cli.command()
@@ -48,6 +49,7 @@ def test(coverage, test_names):
         print('HTML version: file://%s/index.html' % covdir)
         COV.erase()
 
+
 @app.cli.command()
 @click.option('--length', default=25,
               help='Number of functions to include in the profiler report.')
@@ -72,4 +74,3 @@ def profile(length, profile_dir):
     ps.strip_dirs()
     ps.sort_stats('tottime')
     ps.print_stats(length)
-

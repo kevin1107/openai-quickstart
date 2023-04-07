@@ -5,19 +5,19 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
-    OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
-    OPENAI_URL = os.getenv('OPENAI_URL', 'https://api.openai.com/v1/chat/completions')
-    OPENAI_MAX_RETRY = os.getenv('OPENAI_MAX_RETRY', '3')
-    OPENAI_TIMEOUT = os.getenv('OPENAI_TIMEOUT', '30')
+    OPENAI_MODEL = os.environ.get('OPENAI_MODEL', 'gpt-3.5-turbo')
+    OPENAI_URL = os.environ.get('OPENAI_URL', 'https://api.openai.com/v1/chat/completions')
+    OPENAI_MAX_RETRY = os.environ.get('OPENAI_MAX_RETRY', '3')
+    OPENAI_TIMEOUT = os.environ.get('OPENAI_TIMEOUT', '30')
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.googlemail.com')
     MAIL_PORT = int(os.environ.get('MAIL_PORT', '587'))
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() in \
                    ['true', 'on', '1']
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'test')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'test')
     OPENAI_MAIL_SUBJECT_PREFIX = '[OpenAI]'
     OPENAI_MAIL_SENDER = 'OpenAI Admin <openai@example.com>'
-    OPENAI_ADMIN = os.environ.get('OPENAI_ADMIN')
+    OPENAI_ADMIN = os.environ.get('OPENAI_ADMIN', 'admin')
 
     @staticmethod
     def init_app(app):
