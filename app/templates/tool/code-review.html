@@ -1,0 +1,35 @@
+{% extends 'tool/includes/layout.html' %}
+
+
+
+
+{% block body %}
+    <main class="container">
+        <div class="bg-light p-5 rounded mt-5">
+            <h1>CodeReview</h1>
+            <p class="lead">
+                In the process of writing code, various bugs and bad smells are often produced due to negligence.
+                Perform refactoring optimization
+            </p>
+            <h2>Enter original code snippet</h2>
+            <form class="" action="/tool/code-review" method="post">
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="jobDescription" placeholder="">
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg">GET RECOMMENDATIONS</button>
+
+            </form>
+        </div>
+
+
+        <div class="p-3 rounded">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3 class="text-primary">{{ prompt }}</h3>
+                    <p class="lead">{{ openAIAnswer }}</p>
+
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

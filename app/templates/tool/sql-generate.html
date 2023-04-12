@@ -1,0 +1,33 @@
+{% extends 'tool/includes/layout.html' %}
+
+
+{% block body %}
+    <main class="container">
+        <div class="bg-light p-5 rounded mt-5">
+            <h1>SQL Generate</h1>
+            <p class="lead">
+                Automatically generate SQL query statements according to requirements
+            </p>
+
+            <h2>Enter requirement</h2>
+            <form class="" action="/tool/sql-generate" method="post">
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="socialMedia"
+                           placeholder="">
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg">GET RECOMMENDATIONS</button>
+            </form>
+        </div>
+
+
+        <div class="p-3 rounded">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3 class="text-primary">{{ prompt }}</h3>
+                    <p class="lead">{{ openAIAnswer }}</p>
+
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
