@@ -1,10 +1,15 @@
+import time
+
 import PyPDF2
 import openai
 import pandas as pd
 import tiktoken
 import xmindparser
 from openai.embeddings_utils import distances_from_embeddings
+from openai.embeddings_utils import get_embedding, cosine_similarity
+
 from tabulate import tabulate
+
 import config
 
 case_step = 5
@@ -17,7 +22,7 @@ tokenizer = tiktoken.encoding_for_model(model)
 
 def pdf2dataframe():
     # test.pdf, mv-v19-1074.pdf
-    file_name = 'mv-v19-1074.pdf'
+    file_name = 'D:\\PycharmProjects\\openai-quickstart\\app\\tool\\ETSI_TS_124_002_V6_0_0_2004_12.pdf'
     # Open the PDF file
     pdf_file = open(file_name, 'rb')
     # Create a PDF reader object
@@ -45,12 +50,19 @@ def pdf2dataframe():
         shortened += pdf_text
     df = pd.DataFrame(shortened, columns=['text'])
     df['n_tokens'] = df.text.apply(lambda x: len(tokenizer.encode(x)))
-    df['embeddings'] = df.text.apply(
-        lambda x: openai.Embedding.create(input=x, engine='text-embedding-ada-002')['data'][0]['embedding'])
+    # Define a function to get the embeddings for a text
+    # def get_embeddings(text):
+    #     try:
+    #         return openai.Embedding.create(input=text, engine='text-embedding-ada-002')['data'][0]['embedding']
+    #     except openai.error.RateLimitError as e:
+    #         print("Rate limit reached. Waiting for 1 minute...")
+    #         time.sleep(60)
+    #         return get_embeddings(text)
+    # df['embeddings'] = df['text'].apply(get_embeddings)
     return df
 
 
-def create_context(question, dataframe, max_len=1800, size="ada"):
+def create_context(question, dataframe, max_len=1800):
     """
     Create a context for a question by finding the most similar context from the dataframe
     """
@@ -124,25 +136,22 @@ def split_into_many(text, max_tokens=max_token):
 
 def answer_question(
         dataframe,
-        models=model,
         question="Am I allowed to publish model outputs to Twitter, without a human review?",
-        previous_message=[],
+        previous_message=None,
         max_len=1800,
-        size="ada",
         debug=False,
-        max_tokens=150,
-        stop_sequence=None,
 ):
     """
     Answer a question based on the most similar context from the dataframe texts
     """
+    if previous_message is None:
+        previous_message = []
     context = create_context(
         question,
         dataframe,
         max_len=max_len,
-        size=size,
     )
-    # If debug, print the raw model response
+    # If debugged, print the raw model response
     if debug:
         print("Context:\n" + context)
         print("\n\n")
@@ -156,10 +165,10 @@ def answer_question(
                                                        f"the context, say \"I don't know\"\n\nContext: "
                                                        f"{context}\n\n---\n\nQuestion: {question}"})
         else:
-            message.append({"role": "system", "content": "You are a great Pharmaceutical Researcher, "
-                                                         "your name is \\\"Synapse AI Assistant\\\""})
-            message.append({"role": "user", "content": """i will give you some context and instruction, and remember your 
-                            name is \\\"Synapse AI Assistant\\\", Do you understand? """})
+            message.append({"role": "system", "content": "You are a great Patent Researcher, "
+                                                         "your name is \\\"AI_Rebot\\\""})
+            message.append({"role": "user", "content": """i will give you some context and instruction, and remember 
+            your name is \\\"AI_Rebot\\\", Do you understand? """})
             message.append({"role": "system",
                             "content": f"Answer the question based on the context below, and if the question can't be "
                                        f"answered based on the context, say \"I don't know\"\n\nContext: {context}"})
@@ -167,13 +176,23 @@ def answer_question(
                                                        f"language of the question, the max length of the "
                                                        f"answer should in 3000 words"})
         # Create a completions using the question and context
+        # response = openai.ChatCompletion.create(model=config.ProductionConfig.OPENAI_MODEL, messages=message,
+        #                                       max_tokens=int(config.ProductionConfig.OPENAI_MAX_TOKENS),
+        #                                       temperature=0.2,
+        #                                       timeout=int(config.ProductionConfig.OPENAI_TIMEOUT))
 
-        answer = openai.chat_completion(message, model, 1800, 0.2, 20)
+        def search_reviews(df, product_description, n=3, pprint=True):
+            embedding = get_embedding(product_description, model='text-embedding-ada-002')
+            df['similarities'] = df.ada_embedding.apply(lambda x: cosine_similarity(x, embedding))
+            res = df.sort_values('similarities', ascending=False).head(n)
+            return res
 
+        answer = search_reviews(dataframe, message, n=3)
+
+        # answer = response['choices'][0]['message']['content'].replace('\n', '<br>')
         if debug:
             print("answer\n" + answer)
             print("\n\n")
-
         message.append({"role": "assistant", "content": answer})
         result_tuple = (message, answer)
         return result_tuple
@@ -315,6 +334,9 @@ def xls2markdown(xls_file):
                                                f"优先级：\n"
                                                f"高\n\n"
                     }]
-
-        response = openai.chat_completion(message, model, max_token, 0.8, 60)
-        print(response)
+        response = openai.ChatCompletion.create(model=config.ProductionConfig.OPENAI_MODEL, messages=message,
+                                                max_tokens=int(config.ProductionConfig.OPENAI_MAX_TOKENS),
+                                                temperature=0.8,
+                                                timeout=int(config.ProductionConfig.OPENAI_TIMEOUT))
+        answer = response['choices'][0]['message']['content'].replace('\n', '<br>')
+        print(answer)

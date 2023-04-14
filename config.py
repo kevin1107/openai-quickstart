@@ -8,6 +8,7 @@ class Config:
     OPENAI_MODEL = os.environ.get('OPENAI_MODEL', 'gpt-3.5-turbo')
     OPENAI_URL = os.environ.get('OPENAI_URL', 'https://api.openai.com/v1/chat/completions')
     OPENAI_MAX_RETRY = os.environ.get('OPENAI_MAX_RETRY', '3')
+    OPENAI_MAX_TOKENS = os.environ.get('OPENAI_MAX_TOKENS', '1500')
     OPENAI_TIMEOUT = os.environ.get('OPENAI_TIMEOUT', '30')
     MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.googlemail.com')
     MAIL_PORT = int(os.environ.get('MAIL_PORT', '587'))

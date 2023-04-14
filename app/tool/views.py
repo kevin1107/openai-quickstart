@@ -10,7 +10,7 @@ def index():
 @tool.route('/code-review', methods=["GET", "POST"])
 def code_review():
     if request.method == 'POST':
-        query = request.form['jobDescription']
+        query = request.form['codeReview']
         print(query)
 
         prompt = 'AI Suggestions for {} are:'.format(query)
@@ -22,7 +22,7 @@ def code_review():
 @tool.route('/program-generate', methods=["GET", "POST"])
 def program_generate():
     if request.method == 'POST':
-        query = request.form['tweetIdeas']
+        query = request.form['programGenerate']
         print(query)
 
         prompt = 'AI Suggestions for {} are:'.format(query)
@@ -34,7 +34,7 @@ def program_generate():
 @tool.route('/regex-generate', methods=["GET", "POST"])
 def regex_generate():
     if request.method == 'POST':
-        query = request.form['coldEmails']
+        query = request.form['regexGenerate']
         print(query)
 
         prompt = 'AI Suggestions for {} are:'.format(query)
@@ -46,7 +46,7 @@ def regex_generate():
 @tool.route('/sql-generate', methods=["GET", "POST"])
 def sql_generate():
     if request.method == 'POST':
-        query = request.form['socialMedia']
+        query = request.form['sqlGenerate']
         print(query)
 
         prompt = 'AI Suggestions for {} are:'.format(query)
@@ -58,7 +58,7 @@ def sql_generate():
 @tool.route('/testcase-generate', methods=["GET", "POST"])
 def test_case_generate():
     if request.method == 'POST':
-        query = request.form['businessPitch']
+        query = request.form['testCaseGenerate']
         print(query)
 
         prompt = 'AI Suggestions for {} are:'.format(query)
@@ -70,17 +70,18 @@ def test_case_generate():
 @tool.route('/pdf-extract', methods=["GET", "POST"])
 def pdf_extract():
     if request.method == 'POST':
-        query = request.form['videoIdeas']
+        query = request.form['pdfExtract']
         print(query)
         df = openapi.pdf2dataframe()
         result = ([], '')
         result = openapi.answer_question(df, question=query.split(), debug=False)
         print(result[1])
+        openAIAnswer = result[1]
     return render_template('tool/pdf-extract.html', **locals())
 @tool.route('/xmind-transform', methods=["GET", "POST"])
 def xmind_transform():
     if request.method == 'POST':
-        query = request.form['videoDescription']
+        query = request.form['xmindTransform']
         print(query)
         prompt = 'AI Suggestions for {} are:'.format(query)
         openAIAnswer = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
