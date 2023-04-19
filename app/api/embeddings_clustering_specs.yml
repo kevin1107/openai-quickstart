@@ -1,0 +1,37 @@
+Find the clusters using K-means
+We show the simplest use of K-means. You can pick the number of clusters that fits your use case best
+---
+tags:
+  - embeddings
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: clusters
+      required:
+          - secretKey
+          - texts
+      properties:
+        secretKey:
+          type: string
+          description: The API key
+          default:
+        texts:
+          type: array
+          items:
+            type: string
+          description: Your text string goes here
+          default:
+definitions:
+  Cluster:
+    type: string
+  Clusters:
+    type: array
+    items:
+      $ref: '#/definitions/Cluster'
+responses:
+  200:
+    description: OK
+    schema:
+      $ref: '#/definitions/Clusters'

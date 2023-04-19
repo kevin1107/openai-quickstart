@@ -1,0 +1,33 @@
+Recommendation using embeddings and nearest neighbor search
+How to use embeddings to find similar items to recommend.
+---
+tags:
+  - embeddings
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: recommend
+      required:
+        - secretKey
+        - descriptions
+      properties:
+        secretKey:
+          type: string
+          description: The API key
+          default:
+        descriptions:
+          type: array
+          items:
+            type: string
+          description: Your article descriptions string goes here
+          default:
+definitions:
+  Recommend:
+    type: string
+responses:
+  200:
+    description: OK
+    schema:
+      $ref: '#/definitions/Recommend'

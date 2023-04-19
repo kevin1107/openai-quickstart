@@ -1,0 +1,36 @@
+Creates an embedding vector representing the input text
+To get an embedding, send your text string to the embeddings API endpoint along with a choice of embedding model ID (e.g., text-embedding-ada-002).
+The response will contain an embedding, which you can extract, save, and use.
+---
+tags:
+  - embeddings
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: Get embeddings
+      required:
+          - secretKey
+          - text
+      properties:
+        secretKey:
+          type: string
+          description: The API key
+          default:
+        text:
+          type: string
+          description: Your text string goes here
+          default:
+definitions:
+  Embedding:
+    type: integer
+  Embeddings:
+    type: array
+    items:
+      $ref: '#/definitions/Embedding'
+responses:
+  200:
+    description: OK
+    schema:
+      $ref: '#/definitions/Embeddings'
