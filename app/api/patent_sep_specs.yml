@@ -1,0 +1,40 @@
+patentBiblioInfo_with_embeddings_1k
+Match patent data and return the top N data with the highest similarity
+---
+tags:
+  - SEP
+parameters:
+  - name: body
+    in: body
+    required: true
+    schema:
+      id: clusters
+      required:
+        - secretKey
+        - question
+        - top_n
+      properties:
+        secretKey:
+          type: string
+          description: The API key
+          default:
+        question:
+          type: string
+          description: Your question string goes here
+          default:
+        top_n:
+          type: integer
+          description: top N data with the highest similarity
+          default:
+definitions:
+  Patent:
+    type: string
+  Patents:
+    type: array
+    items:
+      $ref: '#/definitions/Patent'
+responses:
+  200:
+    description: OK
+    schema:
+      $ref: '#/definitions/Patents'

@@ -44,13 +44,13 @@ def get_embeddings():
         embedding_info = request.get_json()
         if not bool(embedding_info):
             return {'code': 'error', 'msg': 'request body is not null!'}, 400
-        secretKey = embedding_info['secretKey']
+        secret_key = embedding_info['secretKey']
         text = embedding_info['text']
-        if secretKey is None:
+        if secret_key is None:
             return {'code': 'error', 'msg': 'secretKey is not null!'}, 400
         if text is None:
             return {'code': 'error', 'msg': 'text is not null!'}, 400
-        openai.api_key = secretKey
+        openai.api_key = secret_key
         response = openai.Embedding.create(
             input=text,
             model=EMBEDDING_MODEL
@@ -69,16 +69,16 @@ def evaluate_embeddings_approach():
         embedding_info = request.get_json()
         if not bool(embedding_info):
             return {'code': 'error', 'msg': 'request body is not null!'}, 400
-        secretKey = embedding_info['secretKey']
+        secret_key = embedding_info['secretKey']
         label1 = embedding_info['label1']
         label2 = embedding_info['label2']
-        if secretKey is None:
+        if secret_key is None:
             return {'code': 'error', 'msg': 'secretKey is not null!'}, 400
         if label1 is None:
             return {'code': 'error', 'msg': 'label1 is not null!'}, 400
         if label2 is None:
             return {'code': 'error', 'msg': 'label2 is not null!'}, 400
-        openai.api_key = secretKey
+        openai.api_key = secret_key
         embedding1 = get_embedding(label1)
         embedding2 = get_embedding(label2)
         similarity = cosine_similarity(embedding1, embedding2)
@@ -95,14 +95,14 @@ def kmeans_clusters():
         embedding_info = request.get_json()
         if not bool(embedding_info):
             return {'code': 'error', 'msg': 'request body is not null!'}, 400
-        secretKey = embedding_info['secretKey']
+        secret_key = embedding_info['secretKey']
         texts = embedding_info['texts']
-        if secretKey is None:
+        if secret_key is None:
             return {'code': 'error', 'msg': 'secretKey is not null!'}, 400
         if texts is None:
             return {'code': 'error', 'msg': 'texts is not null!'}, 400
         output = []
-        embeddings = np.array([embeddings_text(secretKey, text) for text in texts])
+        embeddings = np.array([embeddings_text(secret_key, text) for text in texts])
         kmeans = KMeans(n_clusters=3)
         clusters = kmeans.fit_predict(embeddings)
         for i, cluster in enumerate(clusters):
@@ -120,13 +120,13 @@ def recommendations_from_strings():
         embedding_info = request.get_json()
         if not bool(embedding_info):
             return {'code': 'error', 'msg': 'request body is not null!'}, 400
-        secretKey = embedding_info['secretKey']
+        secret_key = embedding_info['secretKey']
         descriptions = embedding_info['descriptions']
-        if secretKey is None:
+        if secret_key is None:
             return {'code': 'error', 'msg': 'secretKey is not null!'}, 400
         if descriptions is None:
             return {'code': 'error', 'msg': 'descriptions is not null!'}, 400
-        openai.api_key = secretKey
+        openai.api_key = secret_key
         article_descriptions = descriptions
         recommendations_articles = get_recommendations_from_strings(
             strings=article_descriptions,  # let's base similarity off of the article description
@@ -144,7 +144,7 @@ def get_recommendations_from_strings(
         index_of_source_string: int,
         k_nearest_neighbors: int = 1,
         model=EMBEDDING_MODEL,
-) -> list[int]:
+) -> list[str]:
     """Print out the k nearest neighbors of a given string."""
     # get embeddings for all strings
     embeddings = [embedding_from_string(string, model=model) for string in strings]
